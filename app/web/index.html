@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>本地画室</title>
+<style>
+:root{--ink:#253044;--muted:#6c7281;--blue:#596fc5;--line:#e3e6f0;--cream:#fffdf7;--card:#fff;--bg:#f6f6f3;--red:#b74155}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.5}
+header{padding:22px 20px 16px;background:linear-gradient(115deg,#fefaf2,#eef1fc);border-bottom:1px solid var(--line)}header .wrap{max-width:1140px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}header h1{font-size:23px;margin:0;font-weight:750;letter-spacing:.3px}header p{font-size:13px;margin:3px 0 0;color:var(--muted)}
+.status{font-size:12px;display:flex;align-items:center;gap:7px;color:var(--muted);white-space:nowrap}.dot{width:8px;height:8px;background:#aaa;border-radius:50%;display:inline-block}.dot.ready{background:#3a9b77}
+main{display:grid;grid-template-columns:minmax(320px,420px) minmax(400px,1fr);max-width:1140px;margin:22px auto;gap:20px;padding:0 16px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 4px 24px #2d344008}.panel h2{font-size:17px;margin:0 0 12px}
+.field{margin:14px 0}.field label,.caption{display:block;font-weight:650;font-size:13px;margin-bottom:7px}.hint{font-size:12px;color:var(--muted);font-weight:400;margin-top:5px}input,textarea,select{width:100%;font:inherit;border-radius:11px;border:1px solid #d7dce8;background:#fff;padding:10px 12px;color:var(--ink);outline:none}input:focus,textarea:focus,select:focus{border-color:#869add;box-shadow:0 0 0 3px #8197dc20}textarea{resize:vertical;min-height:95px}#prompt{min-height:132px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:11px}.tabs,.profiles{display:flex;gap:5px;background:#f2f4fa;padding:5px;border-radius:13px}.tab,.profile{border:0;background:transparent;color:#697082;padding:10px;border-radius:9px;flex:1;font-size:13px;font-weight:650;cursor:pointer}.tab.active,.profile.active{background:#fff;color:#3a4a90;box-shadow:0 2px 5px #414f7c12}
+button{cursor:pointer;font:inherit}.btn{border:0;background:#546cc3;color:#fff;padding:12px 16px;border-radius:11px;font-weight:700;transition:filter .2s;min-height:44px}.btn:hover{filter:brightness(1.08)}.btn:disabled{opacity:.48;cursor:not-allowed}.btn.alt{background:#eef0f7;color:#35415f}.btn.danger{background:#fbeef0;color:#a34454}.button-row{display:flex;gap:9px;align-items:center}.button-row .btn:first-child{flex:1}
+.presets{display:flex;gap:7px;flex-wrap:wrap}.chip{font-size:12px;padding:7px 10px;border:1px solid #dce0ef;background:#fbfcff;border-radius:40px;color:#526292}
+.upload{border:1px dashed #aeb9d4;border-radius:12px;padding:16px;background:#fcfdff}.upload input{border:0;padding:0;background:transparent}.hidden{display:none!important}
+.frame{border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#f7f5ff,#fdfaf7);min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;padding:15px}.placeholder{text-align:center;max-width:330px;color:#737990;padding:28px}.symbol{font-size:50px;line-height:1;margin-bottom:18px;color:#9da8d1}.placeholder strong{display:block;font-size:18px;color:#39455c;margin-bottom:10px}#result{max-width:100%;max-height:72vh;object-fit:contain;border-radius:9px;box-shadow:0 12px 25px #26334c1c}#result:not([src]){display:none}
+.progress{display:flex;gap:10px;align-items:center;margin:12px 0;color:#586378;font-size:13px;min-height:20px}.spinner{border:2px solid #d7dff4;border-top-color:#556dbc;border-radius:50%;height:15px;width:15px;display:inline-block;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.footer{font-size:12px;color:#7c8392;margin:16px auto;max-width:1140px;text-align:center;padding:0 18px 25px}.resultactions{display:flex;gap:8px;flex-wrap:wrap}.meta{font-size:12px;color:#797f8c;margin-top:8px}a{color:#536cb6;text-decoration:none}a:hover{text-decoration:underline}
+@media(max-width:800px){main{grid-template-columns:minmax(0,1fr);margin:12px auto;gap:12px;padding:0 10px}.panel{padding:16px;border-radius:15px}header{padding:16px}header h1{font-size:21px}.frame{min-height:380px}#result{max-height:65vh}}@media(max-width:380px){.two{grid-template-columns:1fr}.status{font-size:11px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div><h1>本地画室 <small style="font-size:12px;color:#7983a5;font-weight:500">v1</small></h1><p>动漫 · 真人写真 · COS · 风格参考</p></div><div class="status"><span class="dot" id="statusDot"></span><span id="statusText">检测后端…</span></div></div></header>
+<main>
+<section class="panel">
+ <h2>创作设置</h2>
+ <div class="tabs"><button class="tab active" data-mode="txt2img">文字生图</button><button class="tab" data-mode="img2img">参考图重绘</button></div>
+ <div class="field"><label>画面类型</label><div class="profiles"><button class="profile active" data-profile="anime">动漫插画</button><button class="profile" data-profile="real">真人写真</button><button class="profile" data-profile="custom">自选模型</button></div></div>
+ <div class="field"><label for="checkpoint">使用模型</label><div class="two" style="grid-template-columns:1fr auto"><select id="checkpoint"><option value="">等待检测模型…</option></select><button class="btn alt" id="refresh" type="button">刷新</button></div><div class="hint" id="modelHint">模型需要先放入 checkpoints 文件夹。</div></div>
+ <div class="field"><label>快速主题（选中后仍可自由修改）</label><div class="presets"><button class="chip" data-preset="maid">甜美女仆</button><button class="chip" data-preset="shogun">雷电将军 COS</button><button class="chip" data-preset="dress">华丽礼服</button></div></div>
+ <div class="field"><label for="prompt">正面提示词 · English recommended</label><textarea id="prompt" spellcheck="false">masterpiece, best quality, portrait of an adult woman, delicate expressive eyes, gentle smile, beautiful natural three-dimensional face, cinematic lighting, intricate costume details</textarea><div class="hint">本地 SDXL 模型通常更适合英文提示词。</div></div>
+ <div class="field"><label for="negative">负面提示词</label><textarea id="negative" rows="2" spellcheck="false">low quality, blurry, distorted face, deformed hands, flat lighting, plastic skin, bad anatomy, extra fingers, watermark, text</textarea></div>
+ <div class="field hidden" id="imageField"><label>参考图片</label><div class="upload"><input id="reference" type="file" accept="image/png,image/jpeg,image/webp"><div class="hint">PNG/JPEG/WebP，单张上限 10 MB；图片会上传到你自己电脑上的 ComfyUI，不传外部服务器。</div></div></div>
+ <div class="two">
+  <div class="field"><label for="size">画幅</label><select id="size"><option value="portrait">竖图 768 × 1152</option><option value="square">方图 1024 × 1024</option><option value="landscape">横图 1152 × 768</option><option value="wallpaper">手机壁纸 832 × 1216</option></select></div>
+  <div class="field"><label for="steps">采样步数</label><input id="steps" type="number" min="5" max="60" value="28"></div>
+  <div class="field"><label for="cfg">CFG 引导强度</label><input id="cfg" type="number" min="1" max="15" step="0.5" value="6"></div>
+  <div class="field"><label for="seed">随机种子（留空随机）</label><input id="seed" type="number" min="0" placeholder="随机"></div>
+ </div>
+ <div class="field hidden" id="strengthField"><label for="strength">参考图改变幅度 <span id="strengthValue">0.55</span></label><input id="strength" type="range" min="0.10" max="1" step="0.05" value="0.55"><div class="hint">越低越保留原图；越高变化越大，0.3–0.6 可先尝试。</div></div>
+ <div class="field"><label for="lora">附加 LoRA（可选）</label><div class="two"><select id="lora"><option value="">不使用</option></select><input type="number" id="lora_strength" value="0.75" min="0" max="1.5" step="0.05" aria-label="LoRA强度"></div><div class="hint">左侧选 LoRA，右侧设强度；只有对应模型家族的 LoRA 才能正常工作。</div></div>
+ <div class="button-row"><button class="btn" id="generate" type="button">开始生成</button><button class="btn danger" id="stop" type="button" disabled>停止</button></div>
+</section>
+<section class="panel">
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2>生成预览</h2><span style="font-size:12px;color:#8b91a3">保存在本地 output 文件夹</span></div>
+ <div class="frame" id="frame"><div class="placeholder" id="placeholder"><div class="symbol">✦</div><strong>让你的角色在这里出现</strong><span>选好模型和画面类型，填入提示词后即可生成。<br>第一次载入模型可能需要更久。</span></div><img id="result" alt="生成结果"></div>
+ <div class="progress"><span id="spinner" class="spinner hidden"></span><span id="progressText">尚未生成</span></div>
+ <div class="resultactions"><a id="save" class="btn alt hidden" download="LocalStudio.png" href="#">保存图片</a><button id="reuse" class="btn alt hidden" type="button">用这张继续重绘</button></div>
+ <div class="meta">提示：这里是本地 ComfyUI 生成结果，不是云端生图服务。显存不足时，可降低画幅并关闭其他占显存程序。</div>
+</section>
+</main>
+<div class="footer">本地画室 v1 · 默认仅允许这台电脑访问 · 模型与图片保留在安装目录中</div>
+<script>
+const $=id=>document.getElementById(id);
+const presets={
+ maid:'masterpiece, best quality, an adult East Asian woman cosplaying an elegant blue-haired maid, charming gentle smile, bright expressive almond-shaped eyes, delicate three-dimensional nose and cheeks, natural soft skin, ornate navy and white lace dress, blue ribbons, warm cinematic portrait lighting, realistic perspective, medium close-up',
+ shogun:'masterpiece, best quality, an adult beautiful woman in highly faithful Raiden Shogun cosplay from Genshin Impact, violet braided hair, purple eyes, finely detailed purple kimono inspired costume, elegant confident expression, intricate embroidered details, cinematic anime convention portrait, flattering dimensional lighting',
+ dress:'masterpiece, best quality, an adult beautiful woman wearing an intricate fantasy court gown with luxurious silk, delicate embroidery, translucent layered fabric, gold filigree and jewel details, graceful pose, three dimensional face, soft directional light, elegant composition'
+};
+let mode='txt2img', profile='anime', checkpoints=[], loras=[], running=false, pollTimer=null, lastResult='';
+const api=async(path,body)=>{const opts=body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};const r=await fetch(path,opts);let j;try{j=await r.json()}catch{throw new Error('后端返回内容无法读取');}if(!r.ok)throw new Error(j.error||`请求错误 ${r.status}`);return j};
+const setText=text=>$('progressText').textContent=text;
+const busy=value=>{running=value;$('generate').disabled=value;$('stop').disabled=!value;$('spinner').classList.toggle('hidden',!value)};
+function modelSelect(){const sel=$('checkpoint');const previous=sel.value;sel.replaceChildren();if(!checkpoints.length){let op=document.createElement('option');op.value='';op.textContent='暂无模型，请安装模型';sel.append(op);return;}for(const name of checkpoints){let o=document.createElement('option');o.value=name;o.textContent=name;sel.append(o)}const match=(profile==='anime'?checkpoints.find(n=>/animagine|illustrious|wai|noob|pony/i.test(n)):profile==='real'?checkpoints.find(n=>/realvis|realistic|juggernaut|photo/i.test(n)):previous);sel.value=match||previous||checkpoints[0];if(!sel.value)sel.selectedIndex=0;$('modelHint').textContent=`已发现 ${checkpoints.length} 个模型；没有同类模型时请手动选择。`}
+async function loadModels(){try{const m=await api('/api/models');checkpoints=m.checkpoints||[];loras=m.loras||[];modelSelect();const s=$('lora'),v=s.value;s.replaceChildren();let none=document.createElement('option');none.value='';none.textContent='不使用';s.append(none);for(const n of loras){const el=document.createElement('option');el.value=n;el.textContent=n;s.append(el)}s.value=loras.includes(v)?v:'';}catch(e){$('modelHint').textContent=e.message;setText('尚未连接 ComfyUI，启动后可刷新。')}}
+async function checkStatus(){try{const s=await api('/api/status');$('statusDot').classList.toggle('ready',!!s.ready);$('statusText').textContent=s.ready?'后端已连接':'后端启动中';if(s.ready&&!checkpoints.length)await loadModels();}catch{$('statusDot').classList.remove('ready');$('statusText').textContent='无法检测后端'}}
+for(const el of document.querySelectorAll('[data-mode]'))el.onclick=()=>{mode=el.dataset.mode;document.querySelectorAll('[data-mode]').forEach(t=>t.classList.toggle('active',t===el));$('imageField').classList.toggle('hidden',mode!=='img2img');$('strengthField').classList.toggle('hidden',mode!=='img2img')};
+for(const el of document.querySelectorAll('[data-profile]'))el.onclick=()=>{profile=el.dataset.profile;document.querySelectorAll('[data-profile]').forEach(t=>t.classList.toggle('active',t===el));modelSelect();$('cfg').value=profile==='real'?'5':'6'};
+for(const el of document.querySelectorAll('[data-preset]'))el.onclick=()=>$('prompt').value=presets[el.dataset.preset];
+$('strength').oninput=()=>$('strengthValue').textContent=$('strength').value;
+$('refresh').onclick=loadModels;
+$('stop').onclick=async()=>{try{await api('/api/interrupt',{});setText('已发送中断指令；任务可能需要稍后停止。')}catch(e){setText(e.message)}};
+$('reuse').onclick=async()=>{try{const r=await fetch(lastResult);const b=await r.blob();const f=new File([b],'last-result.png',{type:b.type||'image/png'});const dt=new DataTransfer();dt.items.add(f);$('reference').files=dt.files;document.querySelector('[data-mode="img2img"]').click();window.scrollTo({top:0,behavior:'smooth'});setText('已将上一张结果设置为参考图。')}catch(e){setText('无法将结果加载为参考图：'+e.message)}};
+async function upload(){const f=$('reference').files[0];if(!f)throw new Error('请先选择参考图片。');if(f.size>10*1024*1024)throw new Error('图片大小超过 10 MB。');const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('读取参考图失败'));r.readAsDataURL(f)});const j=await api('/api/upload',{data});return j.name;}
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function poll(id){for(let i=0;i<900;i++){if(!running)return;await wait(1400);let j=await api('/api/job?id='+encodeURIComponent(id));if(j.state==='done'){const url=j.images[0];$('result').src=url;$('placeholder').classList.add('hidden');$('save').href=url;$('save').classList.remove('hidden');$('reuse').classList.remove('hidden');lastResult=url;setText('生成完成 · 点击图片可查看，或保存到本机');return;}if(j.state==='error')throw new Error('生成失败：'+(j.message||'检查启动窗口中的具体错误'));if(i%9===0)setText('正在排队或生成中… ComfyUI 首次加载模型可能比较慢。')}throw new Error('等待结果超时，请检查 ComfyUI 输出目录。')}
+$('generate').onclick=async()=>{if(running)return;busy(true);$('save').classList.add('hidden');$('reuse').classList.add('hidden');$('result').removeAttribute('src');$('placeholder').classList.remove('hidden');try{if(!checkpoints.length)throw new Error('尚未安装任何 checkpoint 模型。');let upload_name='';if(mode==='img2img'){setText('正在上传参考图到本地后端…');upload_name=await upload();}setText('正在提交生成任务…');const spec={mode,profile,checkpoint:$('checkpoint').value,lora:$('lora').value,lora_strength:$('lora_strength').value,prompt:$('prompt').value,negative:$('negative').value,size:$('size').value,steps:$('steps').value,cfg:$('cfg').value,seed:$('seed').value,strength:$('strength').value,upload_name};const r=await api('/api/generate',spec);setText('任务已加入队列，正在生成…');await poll(r.id);}catch(e){setText(e.message||'生成失败');}finally{busy(false)}};
+checkStatus();setInterval(checkStatus,18000);
+</script>
+</body>
+</html>
