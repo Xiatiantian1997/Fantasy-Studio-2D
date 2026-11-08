@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>本地画室</title>
+<title>幻真画室</title>
 <style>
 :root{--ink:#253044;--muted:#6c7281;--blue:#596fc5;--line:#e3e6f0;--cream:#fffdf7;--card:#fff;--bg:#f6f6f3;--red:#b74155}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.5}
@@ -19,15 +19,32 @@ button{cursor:pointer;font:inherit}.btn{border:0;background:#546cc3;color:#fff;p
 .frame{border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#f7f5ff,#fdfaf7);min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;padding:15px}.placeholder{text-align:center;max-width:330px;color:#737990;padding:28px}.symbol{font-size:50px;line-height:1;margin-bottom:18px;color:#9da8d1}.placeholder strong{display:block;font-size:18px;color:#39455c;margin-bottom:10px}#result{max-width:100%;max-height:72vh;object-fit:contain;border-radius:9px;box-shadow:0 12px 25px #26334c1c}#result:not([src]){display:none}
 .progress{display:flex;gap:10px;align-items:center;margin:12px 0;color:#586378;font-size:13px;min-height:20px}.spinner{border:2px solid #d7dff4;border-top-color:#556dbc;border-radius:50%;height:15px;width:15px;display:inline-block;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.footer{font-size:12px;color:#7c8392;margin:16px auto;max-width:1140px;text-align:center;padding:0 18px 25px}.resultactions{display:flex;gap:8px;flex-wrap:wrap}.meta{font-size:12px;color:#797f8c;margin-top:8px}a{color:#536cb6;text-decoration:none}a:hover{text-decoration:underline}
 @media(max-width:800px){main{grid-template-columns:minmax(0,1fr);margin:12px auto;gap:12px;padding:0 10px}.panel{padding:16px;border-radius:15px}header{padding:16px}header h1{font-size:21px}.frame{min-height:380px}#result{max-height:65vh}}@media(max-width:380px){.two{grid-template-columns:1fr}.status{font-size:11px}}
+
+/* Unified Fantasy Studio navigation; generation controls below remain the original working app. */
+.studio-nav{max-width:1140px;margin:16px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.studio-nav button{font:inherit;background:#fff;border:1px solid var(--line);color:#677186;border-radius:12px;padding:12px 8px;font-weight:650;cursor:pointer}
+.studio-nav button.active{color:#464b8d;background:#eef1fc;border-color:#bfc6e4}
+.studio-info{max-width:1108px;margin:22px auto;padding:26px;min-height:290px}
+.studio-info h2{font-size:21px;margin:0 0 10px}.studio-info p{line-height:1.8;color:#606b7c;max-width:700px}
+.studio-info .notice{display:inline-block;border-radius:24px;padding:5px 11px;background:#f6f0de;color:#836d36;font-size:12px;font-weight:700}
+@media(max-width:800px){.studio-nav{margin-top:10px;padding:0 10px}.studio-nav button{padding:11px 4px;font-size:13px}.studio-info{margin:12px 10px;padding:20px}}
+
 </style>
 </head>
 <body>
-<header><div class="wrap"><div><h1>本地画室 <small style="font-size:12px;color:#7983a5;font-weight:500">v1</small></h1><p>动漫 · 真人写真 · COS · 风格参考</p></div><div class="status"><span class="dot" id="statusDot"></span><span id="statusText">检测后端…</span></div></div></header>
-<main>
+<header><div class="wrap"><div><h1>幻真画室</h1><p>绘画 · 人体姿势 · 素材 · 作品</p></div><div class="status"><span class="dot" id="statusDot"></span><span id="statusText">检测后端…</span></div></div></header>
+<nav class="studio-nav" aria-label="幻真画室功能">
+  <button type="button" class="active" data-studio-page="draw" aria-current="page">2D 绘画</button>
+  <button type="button" data-studio-page="body">3D 人体</button>
+  <button type="button" data-studio-page="materials">素材库</button>
+  <button type="button" data-studio-page="works">作品</button>
+</nav>
+
+<main id="studioDraw">
 <section class="panel">
  <h2>创作设置</h2>
  <div class="tabs"><button class="tab active" data-mode="txt2img">文字生图</button><button class="tab" data-mode="img2img">参考图重绘</button></div>
- <div class="field"><label>画面类型</label><div class="profiles"><button class="profile active" data-profile="anime">动漫插画</button><button class="profile" data-profile="real">真人写真</button><button class="profile" data-profile="custom">自选模型</button></div></div>
+ <div class="field"><label>现有绘图模型类型</label><div class="profiles"><button class="profile active" data-profile="anime">动漫插画</button><button class="profile" data-profile="real">真人写真</button><button class="profile" data-profile="custom">自选模型</button></div></div>
  <div class="field"><label for="checkpoint">使用模型</label><div class="two" style="grid-template-columns:1fr auto"><select id="checkpoint"><option value="">等待检测模型…</option></select><button class="btn alt" id="refresh" type="button">刷新</button></div><div class="hint" id="modelHint">模型需要先放入 checkpoints 文件夹。</div></div>
  <div class="field"><label>快速主题（选中后仍可自由修改）</label><div class="presets"><button class="chip" data-preset="maid">甜美女仆</button><button class="chip" data-preset="shogun">雷电将军 COS</button><button class="chip" data-preset="dress">华丽礼服</button></div></div>
  <div class="field"><label for="prompt">正面提示词 · English recommended</label><textarea id="prompt" spellcheck="false">masterpiece, best quality, portrait of an adult woman, delicate expressive eyes, gentle smile, beautiful natural three-dimensional face, cinematic lighting, intricate costume details</textarea><div class="hint">本地 SDXL 模型通常更适合英文提示词。</div></div>
@@ -51,8 +68,41 @@ button{cursor:pointer;font:inherit}.btn{border:0;background:#546cc3;color:#fff;p
  <div class="meta">提示：这里是本地 ComfyUI 生成结果，不是云端生图服务。显存不足时，可降低画幅并关闭其他占显存程序。</div>
 </section>
 </main>
-<div class="footer">本地画室 v1 · 默认仅允许这台电脑访问 · 模型与图片保留在安装目录中</div>
+
+<section class="panel studio-info hidden" id="studioBody" aria-label="3D 人体功能">
+  <span class="notice">规划中 · 尚未接入模型</span>
+  <h2>3D 人体参考</h2>
+  <p>将来在这里直接看到人物表面，选择站姿、坐姿或举手等动作，旋转观察视角，再把姿势、深度和法线参考送往 2D 绘画。不必直接操作 Blender 的骨骼或线框。</p>
+  <p>当前完整人体模型、姿势预设和导出接口尚未验证；本页面不会假装已经完成。</p>
+</section>
+<section class="panel studio-info hidden" id="studioMaterials" aria-label="素材库功能">
+  <span class="notice">规划中 · 尚未连接素材索引</span>
+  <h2>素材库</h2>
+  <p>未来按画风、人物、动作、服装和材质查找参考，并保留来源、原图及权限信息。私人原档默认不会进入 AI 自动创作库。</p>
+  <p>现有的“参考图重绘”功能仍可在「2D 绘画」中使用。</p>
+</section>
+<section class="panel studio-info hidden" id="studioWorks" aria-label="作品管理功能">
+  <span class="notice">规划中 · 尚无作品管理索引</span>
+  <h2>作品</h2>
+  <p>后续将支持查看历史结果、对比、局部修改以及保存完整的生成配方。当前生成结果仍在「2D 绘画」里预览和保存，并存放于本机 output 目录。</p>
+</section>
+
+<div class="footer">幻真画室 · 默认仅允许这台电脑访问 · 模型与图片保留在安装目录中</div>
 <script>
+
+/* One app shell; keep the existing 2D generation controls and handlers intact. */
+const studioSections={draw:document.getElementById('studioDraw'),body:document.getElementById('studioBody'),materials:document.getElementById('studioMaterials'),works:document.getElementById('studioWorks')};
+for(const tab of document.querySelectorAll('[data-studio-page]')){
+  tab.addEventListener('click',()=>{
+    const target=tab.dataset.studioPage;
+    for(const [id,section] of Object.entries(studioSections))section.classList.toggle('hidden',id!==target);
+    for(const t of document.querySelectorAll('[data-studio-page]')){
+      const active=t===tab;t.classList.toggle('active',active);
+      if(active)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');
+    }
+  });
+}
+
 const $=id=>document.getElementById(id);
 const presets={
  maid:'masterpiece, best quality, an adult East Asian woman cosplaying an elegant blue-haired maid, charming gentle smile, bright expressive almond-shaped eyes, delicate three-dimensional nose and cheeks, natural soft skin, ornate navy and white lace dress, blue ribbons, warm cinematic portrait lighting, realistic perspective, medium close-up',
