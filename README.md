@@ -1,3 +1,13 @@
+# Fantasy Studio 2D｜幻真画室主程序
+
+> **产品定位更新（2026-11-08）**：我们要做的是**自己的一套简洁中文本地创作软件**，以 ComfyUI 为生成引擎，以 [Fantasy Studio 3D](https://github.com/Xiatiantian1997/Fantasy-Studio-3D) 为未来人体姿势/结构模块。用户通过画风、人物、动作、素材等入口操作，不必直接接触节点图或 Blender 专业界面。
+>
+> **[软件产品方案](docs/product-plan.md)** · **[统一操作界面原型（HTML 源码）](prototypes/studio-shell.html)** · **[3D 对应仓库](https://github.com/Xiatiantian1997/Fantasy-Studio-3D)**
+>
+> ⚠️ **当前可运行代码仍是下面的本地画室 v1**。界面原型是独立文件，支持选项切换和导出配置，但还不具备实际生图、3D 查看和素材检索。**尚未提供独立 exe 安装包**；保留当前安装脚本和原有功能，先实机验证后逐步升级。
+
+---
+
 # 本地画室 v1｜Windows 2D 生图器
 
 这是一个**简洁中文前端 + ComfyUI 本地 GPU 后端**的项目。专为动漫插画、真人写真和 COS 主题图设计，支持文生图、图生图、LoRA、常用尺寸和保存结果。
