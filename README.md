@@ -1,6 +1,8 @@
 # 幻真画室｜2D 绘画模块
 
-> **这是「幻真画室」的 2D 技术仓库，不再承担整个软件的总控职责。** 总体界面、统一启动、素材索引、作品历史和 2D/3D 交接归属 [Fantasy-Studio 总控](https://github.com/Xiatiantian1997/Fantasy-Studio-)；3D 建模归属 [Fantasy-Studio-3D](https://github.com/Xiatiantian1997/Fantasy-Studio-3D)。
+**当前产品方案（2026-11-11 汇总）**：房间、模特、衣柜、摄影机与微缩房间导航统一见[产品体验](https://github.com/Xiatiantian1997/Fantasy-Studio/blob/main/docs/product-ux.md)；近期三身材、固定姿势的成衣范围见[衣装方案](https://github.com/Xiatiantian1997/Fantasy-Studio/blob/main/docs/clothing-plan.md)。本仓库较早的 UI/评审说明不另行决定总体导航；实现状态仍须以代码和实测为准。
+
+> **这是「幻真画室」的 2D 技术仓库，不再承担整个软件的总控职责。** 总体界面、统一启动、素材索引、作品历史和 2D/3D 交接归属 [Fantasy-Studio 总控](https://github.com/Xiatiantian1997/Fantasy-Studio)；3D 建模归属 [Fantasy-Studio-3D](https://github.com/Xiatiantian1997/Fantasy-Studio-3D)。
 
 用户最终只有一套「幻真画室」。**两个技术模块独立开发，不等于两套产品或两个版本。**
 
@@ -49,4 +51,4 @@
 - 未来 3D 接口采用 [Fantasy-Studio-3D 的导出规范](https://github.com/Xiatiantian1997/Fantasy-Studio-3D/blob/main/docs/interface-v0.1.md) 产生的控制包；2D 消费并转换为 ControlNet 实际输入。
 - 主控负责跨模块状态/任务追踪、素材权限、作品版本与单一用户入口。
 
-详细职责见 [总控职责规范](https://github.com/Xiatiantian1997/Fantasy-Studio-/blob/main/docs/responsibilities.md)（总控目前为私人仓库，需拥有相应访问权限）。
+详细职责见 [总控职责规范](https://github.com/Xiatiantian1997/Fantasy-Studio/blob/main/docs/responsibilities.md)。
